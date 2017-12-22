@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.9/vue.js" rel="stylesheet">-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+
+<body>
+<div id="app">
+    <h1 style="font-weight:300" class="text-center">LISTA DE PAGOS</h1>
+    <h3 class="text-center">Practica de lista de pagos hecha en Vue2 y vuetify</h3>
+    <v-app light>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    <table class="table table-stripped" align="center">
+                        <thead class="headers">
+                        <tr>
+                            <th>Descripcion</th>
+                            <th style="width:200px;">monto</th>
+                            <th style="width:100px;">Cancelado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control" v-model="newEntry.name">
+                            </td>
+                            <td>
+                                <input type="number" class="form-control" v-model="newEntry.monto">
+
+                            </td>
+                            <td>
+                                <button @click="add()" type="button" class="btn btn-success btn-block">Agregar</button>
+                            </td>
+                        </tr>
+                        <tr v-if="items.length === 0">
+
+                            <td colspan="4" class="text-center">No hay registros para mostrar</td>
+
+                        </tr>
+                        <tr v-for="item,index in items">
+
+
+                            <td>
+                                <button @Click="removeItem(index)" class="btn btn-warning">Borrar
+                                </button>
+                            </td>
+                            <td> {{item.name}}</td>
+                            <td>{{item.monto}}</td>
+
+                            <td class="text-center" :title="item.pagado ? 'Ya estan pagados!' : 'Click para pagar!'">
+
+                                <button
+                                @click="changeToPaid(item)">
+                                    <v-btn v-if="item.pagado" color="primary">Pagado</v-btn>
+                                    <v-btn color="error" v-if="!item.pagado">Pagar</v-btn>
+                                </button>
+                            </td>
+
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr class="montos">
+                            <td></td>
+                            <td class="text-right">Por pagar</td>
+                            <td>{{totalMonto(0)}}</td>
+                            <td></td>
+                        </tr>
+                        <tr class="montos">
+                            <td></td>
+                            <td class="text-right">Pagado</td>
+                            <td>{{totalMonto(1)}}</td>
+                            <td></td>
+                        </tr>
+                        <tr class="montos">
+                            <td></td>
+                            <td class="text-right">Total</td>
+                            <td>{{totalMonto(2)}}</td>
+                            <td></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </v-app>
+</div>
+
+<!--<script src="https://unpkg.com/vue"></script>-->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            newEntry: {
+                name: '',
+                monto: 0
+            },
+            items: [{
+                name: 'Universidad',
+                monto: 4500,
+                pagado: false
+            },
+                {
+                    name: 'Cable',
+                    monto: 2085,
+                    pagado: false
+                },
+                {
+                    name: 'Internet y telefono',
+                    monto: 1500,
+                    pagado: true
+                },
+
+
+            ]
+        },
+        methods: {
+            removeItem: function (index) {
+                this.items.splice(index, 1);
+            },
+            //Emmascript 6 syntax
+            //Para agregar y limpiar los montos al agregar.
+            add() {
+                this.items.push({
+                    name: this.newEntry.name,
+                    monto: parseFloat(this.newEntry.monto),
+                    pagado: false
+                });
+
+                //parte en la que limpia.
+                this.newEntry.name = '';
+                this.newEntry.monto = 0;
+            },
+            changeToPaid(item){
+                //quiere decir que si el item actual es true, que lo conviertan a falso y viceversa.
+                item.pagado = !(item.pagado);
+
+            },
+            totalMonto(t){
+                var total = this.items.reduce(function(a,b){
+                    
+
+                    switch(t){
+                        case 0:return a + (!b.pagado ? b.monto : 0);
+                        case 1:return a + (b.pagado ? b.monto : 0);
+                        case 2: return a + b.monto;
+                    }
+                },0);
+
+                
+                return total.toFixed(2);
+
+
+                 
+                }
+        }
+    })
+</script>
+</body>
+
+</html>
